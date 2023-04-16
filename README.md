@@ -1,7 +1,6 @@
-# beaconwhisper
+# Beacon Whisper
 Data Exfilteration with Beacon Frames 
 
-This is a proof of concept to exfilterate data from a sender to a receiver.
 # FAQ
 
 ## What does this code do?
@@ -10,9 +9,18 @@ It then proceeds to exfilterate data that remains hidden in a particular element
 
 ## How do you use it?
 This is an experiment that you can set up in a lab. You will need at least one WiFi card capable of entering monitor mode. You can then run the transmit, and receive on the same machine and see how it works.
+Ensure that your wireless card is in monitor mode. You can set it using airmon-ng or any other tool that you like. 
+
+Transmit 
+```bash
+python main.py transmit /path/to/file wlan0mon
+
+Receive
+```bash
+python main.py receive /path/to/file wlan0mon
 
 ## Is there a real world use case?
-Yes. The capability to exfilterate data in the real world will likely take on the form of something like the transmitter component being embedded in malware. How to get the malware onto the system, and how to put the infected systems Wireless card into monitor mode is beyond the scope of this project.
+Yes. The capability to exfilterate data in the real world using beacon frames will likely take on the form of the transmitter component being embedded in malware. How to get the malware onto the system, and how to put the infected systems Wireless card into monitor mode is beyond the scope of this project.
 I may attempt another project to patch the wireless drivers in memory to enable monitor mode on select chipsets, but for now this is it. 
 
 ## Disclaimer
