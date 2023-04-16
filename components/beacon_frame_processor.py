@@ -38,18 +38,21 @@ class BeaconFrameProcessor:
 
     def replay_beacon_frames(self):
         print("Replaying captured beacon frames...")
-        for frame in self.beacon_frames:
-            sendp(frame, iface=self.interface, loop=1,  verbose=1)   #Make this send continuously
-            print(frame)
+        #for frame in self.beacon_frames:
+        sendp(self.beacon_frames, iface=self.interface, loop=1,  verbose=1)   #Make this send continuously
     
     def inject_tim_element(self, pvb_array, dtim_count=0, dtim_period=1, bitmap_control=3):
         n=0
-        for frame in self.beacon_frames:
-            pvb = pvb_array[n]
+        # This code will cycle through the outer array and, for each element of the outer array, 
+        # it will pick the corresponding element in the inner array, 
+        # wrapping around if the inner array is shorter than the outer array.
+        for i, pvb in enumerate(pvb_array):
+            inner_index= i % len(self.beacon_frames)
+            frame = self.beacon_frames[inner_index]
             if frame.haslayer(Dot11Beacon):
                 # Create a TIM element
                 tim_element = Dot11Elt(ID=5,  # TIM element ID is 5
-                                    len=6 + len(pvb),  # Length of the TIM element (4 bytes fixed fields + length of the partial virtual bitmap)
+                                    len=3 + len(pvb),  # Length of the TIM element (4 bytes fixed fields + length of the partial virtual bitmap)
                                     info=struct.pack('BBB', dtim_count, dtim_period, bitmap_control) + pvb)
 
                 # Inject the TIM element into the frame
@@ -61,9 +64,8 @@ class BeaconFrameProcessor:
                     frame.add_payload(tim_element)
                     n+=1
                     print("Injecting Payload DOES NOT have layer")
-            if n == (len(pvb_array)):
-                n=0
-        
+
+
     
     def read_tim_element(self):
         for frame in self.beacon_frames:
@@ -115,7 +117,7 @@ class BeaconFrameProcessor:
                 else:
                     print("TIM Element not found in this frame")
 
-                    self.beacon_frames.append(packet)
+                    #self.beacon_frames.append(packet)
                 #print("Access Point MAC: %s with SSID: %s " %(packet.addr2, packet.info))
 
         print("Capturing beacon frames...")
