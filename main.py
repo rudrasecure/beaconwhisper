@@ -31,7 +31,7 @@ def transmit(filename, interface):
     pvb_array_maker = PVBMaker(chunks)
     pvb_array = pvb_array_maker.do()
     sniffer = BeaconFrameProcessor(interface)
-    sniffer.capture_beacon_frames(timeout=10)  # Capture unique beacon frames for 20 seconds
+    sniffer.capture_beacon_frames(timeout=10)  # Capture unique beacon frames for 10 seconds
     sniffer.inject_tim_element(pvb_array)
     sniffer.read_tim_element()  #Debugging - check that things look ok
     sniffer.replay_beacon_frames()

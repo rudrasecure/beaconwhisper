@@ -56,11 +56,11 @@ class BeaconFrameProcessor:
                 if frame.haslayer(Dot11Elt):
                     frame[Dot11Elt].add_payload(tim_element)
                     n+=1
-                    print("Injecting Payload has layer")
+
                 else:
                     frame.add_payload(tim_element)
                     n+=1
-                    print("Injecting Payload DOES NOT have layer")
+                 
 
 
     
@@ -116,7 +116,6 @@ class BeaconFrameProcessor:
                 else:
                     print("TIM Element not found in this frame")
 
-
         print("Capturing beacon frames...")
         try:
             sniff_kwargs = {'iface': self.interface, 'prn': beacon_packet_handler, 'store': 0}
@@ -131,7 +130,9 @@ class BeaconFrameProcessor:
             print("Error: Please run this script with administrative privileges.")
             sys.exit(1)
 
+    #Take the array of PVB that has been received and reconstructed, and get the bytes in order
     def write_file(self,filename):
+        #Lets get our markers. 
         m1 = b'0x5E'
         m2 = b'0x5F'
         m3 = b'0x5G'
@@ -155,18 +156,16 @@ class BeaconFrameProcessor:
                 payload = data[start_payload:]
                 sorted_tuples.append((payload_position, payload))
                 
-        
+        #Sorted tuples is still very unsorted. We need to make it unique and sorted by the payload position
         unique_sorted_tuples = []
         seen_payloads = set()
         for t in sorted_tuples:
             if t[1] not in seen_payloads:
                 unique_sorted_tuples.append(t)
                 seen_payloads.add(t[1])
-
+        #Sort according to the first element of the tuple - ie the payload position
         unique_sorted_tuples.sort(key=lambda x: x[0])
         unique_sorted_payloads = [t[1] for t in unique_sorted_tuples]
-
-
 
         # Join all extracted byte strings in the array
         combined_data = b''.join(unique_sorted_payloads)
@@ -177,14 +176,3 @@ class BeaconFrameProcessor:
             file1.write(combined_data)
 
 
-if __name__ =="__main__":
-    interface = "wlan0mon"  # Change this to your wireless interface name
-    sniffer = BeaconFrameProcessor(interface)
-    sniffer.capture_beacon_frames(timeout=10)  # Capture beacon frames for 60 seconds
-    beacon_frames=sniffer.inject_tim_element()
-    sniffer.read_tim_element()
-    #print(sniffer.beacon_frames)
-    # for frame in sniffer.beacon_frames:
-    #     print(frame.addr2)
-    #sniffer.replay_beacon_frames()
-    pass

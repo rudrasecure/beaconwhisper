@@ -1,4 +1,4 @@
-#The goal here is to output a file broken down into chunks of 240 bytes
+#The goal here is to output a file broken down into chunks of 230 bytes
 #The TIM consists of a number of fields. The Partial Virtual Bitmap has a max theoretical limit of 251 bytes or 2007 bits. Below is the full picture
 # 1 byte (Element ID) + 1 byte (Length) + 1 byte (DTIM Count) + 1 byte (DTIM Period) + 1 byte (Bitmap Control) + 251 bytes (Partial Virtual Bitmap) = 256 bytes.
 import os
