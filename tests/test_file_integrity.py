@@ -34,7 +34,7 @@ class TestIntegrity(unittest.TestCase):
         chunks = chunker.read_and_chunk()
         pvb_array_maker = PVBMaker(chunks)
         pvb_array = pvb_array_maker.do()
-        search_pattern = b'0x5DUU'
+        search_pattern = b'0x5G'
         extracted_data = []
         for data in pvb_array:
             index = data.find(search_pattern)

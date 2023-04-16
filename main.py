@@ -40,7 +40,8 @@ def transmit(filename):
 def receive(filename):
     print(f"Receiving file: {filename}")
     receiver = BeaconFrameProcessor("wlan0mon")
-    receiver.receive_exfilterated_data(timeout=100)
+    receiver.receive_exfilterated_data(timeout=10)
+    receiver.write_file(filename)
 
 if __name__ == "__main__":
     main()

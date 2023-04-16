@@ -3,9 +3,6 @@ from scapy.all import *
 from scapy.layers.dot11 import Dot11Elt
 import math
 
-#payload_number = n
-#payload_position = n.to_bytes(math.ceil(n.bit_length()/8), byteorder='big')
-
 class BeaconFrameProcessor:
     def __init__(self, interface):
         self.interface = interface
@@ -94,6 +91,7 @@ class BeaconFrameProcessor:
 
     
     def receive_exfilterated_data(self, count=None, timeout=None):
+        self.pvb_array_reconstructed = []
         def beacon_packet_handler(packet):
             if packet.haslayer(Dot11Beacon):
                 tim_element = None
@@ -114,11 +112,10 @@ class BeaconFrameProcessor:
                     print(f"  DTIM Period: {dtim_period}")
                     print(f"  Bitmap Control: {bitmap_control}")
                     print(f"  Partial Virtual Bitmap: {partial_virtual_bitmap}")
+                    self.pvb_array_reconstructed.append(partial_virtual_bitmap)
                 else:
                     print("TIM Element not found in this frame")
 
-                    #self.beacon_frames.append(packet)
-                #print("Access Point MAC: %s with SSID: %s " %(packet.addr2, packet.info))
 
         print("Capturing beacon frames...")
         try:
@@ -133,6 +130,52 @@ class BeaconFrameProcessor:
         except PermissionError:
             print("Error: Please run this script with administrative privileges.")
             sys.exit(1)
+
+    def write_file(self,filename):
+        m1 = b'0x5E'
+        m2 = b'0x5F'
+        m3 = b'0x5G'
+        
+        sorted_tuples = []
+        for data in self.pvb_array_reconstructed:
+            m1_position = data.find(m1)
+            m2_position = data.find(m2)
+            m3_position = data.find(m3)
+            if m1_position != -1 and m2_position != -1 and m3_position != -1:
+            #Add length of markers to avoid including it. Get start and end positions of data in the bytecode
+                start_total_payload_count = m1_position + len(m1)
+                end_=_total_payload_count = m2_position
+
+                start_payload_position = m2_position + len(m2)
+                end_payload_position = data.find(m3)
+
+                start_payload = data.find(m3) + len(m3)
+
+                payload_position = int.from_bytes(data[start_payload_position:end_payload_position], byteorder)
+                payload = data[start_payload:]
+                sorted_tuples.append((payload_position, payload))
+                
+        
+        unique_sorted_tuples = []
+        seen_payloads = set()
+        for t in sorted_tuples:
+            if t[1] not in seen_payloads:
+                unique_sorted_tuples.append(t)
+                seen_payloads.add(t[1])
+
+        unique_sorted_tuples.sort(key=lambda x: x[0])
+        unique_sorted_payloads = [t[1] for t in unique_sorted_tuples]
+
+
+
+        # Join all extracted byte strings in the array
+        combined_data = b''.join(unique_sorted_payloads)
+
+        # Write the combined data to a file
+        output_file_path = filename
+        with open(output_file_path, 'wb') as file1:
+            file1.write(combined_data)
+
 
 if __name__ =="__main__":
     interface = "wlan0mon"  # Change this to your wireless interface name

@@ -4,7 +4,7 @@
 import os
 
 class FileChunker:
-    def __init__(self, file_path, chunk_size=240):
+    def __init__(self, file_path, chunk_size=230):
         self.file_path = file_path
         self.chunk_size = chunk_size
 

@@ -19,6 +19,7 @@ class PVBMaker:
             n = chunk[0]
             payload = chunk[1]
             payload_position = n.to_bytes(math.ceil(n.bit_length()/8), byteorder='big')
-            pvb.append(payload_position+b'0x5DUU'+payload)
+            total_payload_chunks = len(self.chunks).to_bytes(math.ceil(len(self.chunks).bit_length()/8), byteorder='big')
+            pvb.append(b'0x5E'+total_payload_chunks+b'0x5F'+payload_position+b'0x5G'+payload)
         return pvb
             

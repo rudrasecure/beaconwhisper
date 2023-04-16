@@ -30,10 +30,10 @@ class TestFileChunker(unittest.TestCase):
 
         # Check if each chunk (except the last one) has the correct size
         for chunk in chunks[:-1]:
-            self.assertEqual(len(chunk[1]), 240)
+            self.assertEqual(len(chunk[1]), 230)
 
         # Check if the last chunk has the correct size (1000 bytes in total, so the last chunk should be 40 bytes)
-        self.assertEqual(len(chunks[-1][1]), 40)
+        self.assertEqual(len(chunks[-1][1]), 80)
 
 if __name__ == '__main__':
     unittest.main()
